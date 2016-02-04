@@ -7,6 +7,11 @@ configure :development do
   $logger = Logger.new(STDOUT)
 end
 
+def fileTime?
+  ftime = File.mtime(File.join("./graphs.json"))
+  ftime+3600 <= Time.now
+end
+
 get '/?' do
   redirect to('/query') 
 end
@@ -17,7 +22,7 @@ get '/query/?' do
     sparqlstring = File.read( File.join "./templates/get/#{type}.sparql")
     response = RestClient::Resource.new(URI.encode("#{$service_uri}/sparql/?query=#{sparqlstring}"), :verify_ssl => 0, :headers => {:accept => "application/json"}).get
     File.open(File.join("./#{type}.json"), 'w') {|f| f.write(response.body) }
-  end 
+  end if fileTime?
   graphs = JSON.parse(File.read("./graphs.json"))
   subjects = JSON.parse(File.read("./subjects.json"))
   predicates = JSON.parse(File.read("./predicates.json"))
