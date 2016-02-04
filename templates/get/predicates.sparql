@@ -1,0 +1,8 @@
+# retrieve unique predicates of subject URIs without bnodes
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT ?p WHERE {
+ ?s ?p ?o.
+FILTER isURI(?s).
+} GROUP BY ?p

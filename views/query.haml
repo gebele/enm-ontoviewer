@@ -1,0 +1,70 @@
+:javascript
+  function input(){
+    var g = document.getElementById("graph").value.trim();
+    var s = document.getElementById("subject").value.trim();
+    var p = document.getElementById("predicate").value.trim();
+    var o = document.getElementById("object").value.trim();
+    if((g+s+p+o) != "") {
+      return 1;
+    };
+    return 0;
+  };
+  function checkInput(){
+    switch (input()){
+      case 0:
+        alert("Please enter some search terms.");
+        return false;
+        break;
+      case 1:
+        return true;
+        break;
+      default: false;
+    };
+    return false;
+  };
+  function cleanUp(element){
+    $('input').each(function(){
+      if (element != this) {
+        $(this).val('');
+      }
+    });
+    $("textarea[name='object']").each(function(){
+      if (element != this) {
+        $(this).val('');
+      }
+    });
+  };
+%form{:role=>"form", :action=> to("/result"), :method=>"post", :onsubmit=> "return !!(checkInput())"}
+  %div.form-group
+    %label{:for=>"graph"} Graph
+    %input.form-control{:id => "graph", :type=>"text", :name=>"graph", :list=>"dlgraph", :placeholder=>"http", :onselect=>"cleanUp(graph)"}
+      %datalist{:id=>"dlgraph"}
+        - @graphs.each do |g|
+          %option{:value=>g}= g
+
+  %div.form-group
+    %label{:for=>"subjects"} Subject
+    %input.form-control{:id => "subject",:type=>"text", :name=>"subject", :list=>"dlsubject", :placeholder=>"http", :onselect=>"cleanUp(subject)"}
+      %datalist{:id=>"dlsubject"}
+        - @subjects.each do |s|
+          %option{:value=>s}= s
+
+  %div.form-group  
+    %label{:for=>"predicate"} Predicate
+    %input.form-control{:id => "predicate", :type=>"text", :name=>"predicate", :list=>"dlpredicate", :placeholder=>"http", :onselect=>"cleanUp(predicate)"}
+      %datalist{:id=>"dlpredicate"}
+        - @predicates.each do |p|
+          %option{:value=>p}= p
+
+  %div.form-group
+    %label{:for=>"object"} Object
+    %textarea.form-control{:id=>"object", :name=>"object", :rows=>"5", :placeholder=>"search free text (case insensitive)", :onkeyup=>"cleanUp(object)"}
+    %span e.g. cytometric
+  %div.form-group
+    %label{:for=>"type"} Type
+    %select.form-control{:id=>"type", :name=>"type"}
+      - @out_types.each do |t|
+        %option{:value=>t}= t
+  
+  %button.btn.btn-info{:type=>"submit", :style=>"margin: 0 0 2em 0;"} Submit
+

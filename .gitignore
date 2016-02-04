@@ -1,0 +1,5 @@
+Gemfile.lock
+service.rb
+graphs.json
+subjects.json
+predicates.json
