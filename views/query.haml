@@ -34,6 +34,10 @@
       }
     });
   };
+
+%div.well
+  Graph, Subject and Predicate are auto-suggest input fields. Start typing to see the effect.
+
 %form{:role=>"form", :action=> to("/result"), :method=>"post", :onsubmit=> "return !!(checkInput())"}
   %div.form-group
     %label{:for=>"graph"} Graph
@@ -41,6 +45,7 @@
       %datalist{:id=>"dlgraph"}
         - @graphs.each do |g|
           %option{:value=>g}= g
+    %span e.g. nanowiki
 
   %div.form-group
     %label{:for=>"subjects"} Subject
@@ -48,6 +53,7 @@
       %datalist{:id=>"dlsubject"}
         - @subjects.each do |s|
           %option{:value=>s}= s
+    %span e.g. npo
 
   %div.form-group  
     %label{:for=>"predicate"} Predicate
@@ -55,6 +61,7 @@
       %datalist{:id=>"dlpredicate"}
         - @predicates.each do |p|
           %option{:value=>p}= p
+    %span e.g. code
 
   %div.form-group
     %label{:for=>"object"} Object
