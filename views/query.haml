@@ -1,77 +1,81 @@
 :javascript
-  function input(){
-    var g = document.getElementById("graph").value.trim();
-    var s = document.getElementById("subject").value.trim();
-    var p = document.getElementById("predicate").value.trim();
-    var o = document.getElementById("object").value.trim();
-    if((g+s+p+o) != "") {
-      return 1;
-    };
-    return 0;
-  };
-  function checkInput(){
-    switch (input()){
-      case 0:
-        alert("Please enter some search terms.");
+  function render(json) {
+    var config = {
+      "charge": -500,
+      "distance": 50,
+      "width": 1000,
+      "height": 750,
+      "selector": "#result"
+    }
+    d3sparql.dendrogram(json, config)
+    //d3sparql.sunburst(json, config)
+    //d3sparql.roundtree(json, config)
+  }
+
+  function exec_offline() {
+    // remove viewport in case of no result
+    document.getElementById("result").innerHTML = "";
+    var endpoint = d3.select("#endpoint").property("value");
+    var sparql = d3.select("#sparql").property("value");
+    d3sparql.query(endpoint, sparql, render)
+  }
+  function toggle() {
+    d3sparql.toggle()
+  }
+
+  // route call file download
+  function downloadFile(type) {
+    var sparql = d3.select("#sparql").property("value");
+    var uri = "download/"+type+"/?query="+encodeURIComponent(sparql);
+    var link = document.getElementById(type);
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+      if (xhttp.readyState == 4 && xhttp.status == 200) {
+        // link attribute change to file location 
+        uri = "#{to("/")}"+"download/"+xhttp.responseText;
+        link.setAttribute('href', uri );
+        window.open(
+          link.href,
+          '_self'
+        );
         return false;
-        break;
-      case 1:
-        return true;
-        break;
-      default: false;
+      }
+      else {
+        div.innerHTML = "<p><b>no result</b></p>";
+      }
     };
-    return false;
-  };
-  function cleanUp(element){
-    $('input').each(function(){
-      if (element != this) {
-        $(this).val('');
-      }
-    });
-    $("textarea[name='object']").each(function(){
-      if (element != this) {
-        $(this).val('');
-      }
-    });
-  };
+    xhttp.open("GET", uri, true);
+    xhttp.send();
+  }
 
-%div.well
-  Graph, Subject and Predicate are auto-suggest input fields. Start typing to see the effect.
+#query{:style => "margin: 10px"}
+  %form.form-inline
+    %label SPARQL endpoint:
+    %input#endpoint{:size=>"50",:type => "text", :value => to("/search/"), :disabled=>"disabled"}
+    %li.btn.btn-default{:onclick => "exec_offline()"} Query
+    %li.btn.btn-default{:onclick => "toggle()"} Hide  
+    %label Download:
+    %li.btn.btn-default
+      %a{:id=>"json", :href=>"#{to("/")}", :onclick=>"downloadFile(\"json\"); return false;"} json
+    %li.btn.btn-default
+      %a{:id=>"rdf", :href=>"#{to("/")}", :onclick=>"downloadFile(\"rdf\"); return false;"} rdf
+    %li.btn.btn-default
+      %a{:id=>"txt", :href=>"#{to("/")}", :onclick=>"downloadFile(\"txt\"); return false;"} txt
+  %textarea#sparql{:rows => "20", :cols=>"85"}
+    :preserve
+      PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+      PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+      PREFIX dc: <http://purl.org/dc/elements/1.1/>
+      PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+      PREFIX owl: <http://www.w3.org/2002/07/owl#>
+      PREFIX obo: <http://purl.obolibrary.org/obo/>
 
-%form{:role=>"form", :action=> to("/result"), :method=>"post", :onsubmit=> "return !!(checkInput())"}
-  %div.form-group
-    %label{:for=>"graph"} Graph
-    %input.form-control{:id => "graph", :type=>"text", :name=>"graph", :list=>"dlgraph", :placeholder=>"http", :onselect=>"cleanUp(graph)"}
-      %datalist{:id=>"dlgraph"}
-        - @graphs.each do |g|
-          %option{:value=>g}= g
-    %span e.g. nanowiki
+      SELECT ?root_name ?parent_name ?child_name WHERE {
+        ?root a ?root_name.
+        ?child rdfs:subClassOf ?root.
+        ?child rdfs:subClassOf ?parent .
+        ?child rdfs:label ?child_name .
+        ?parent a ?parent_name .
+      } LIMIT 100
 
-  %div.form-group
-    %label{:for=>"subjects"} Subject
-    %input.form-control{:id => "subject",:type=>"text", :name=>"subject", :list=>"dlsubject", :placeholder=>"http", :onselect=>"cleanUp(subject)"}
-      %datalist{:id=>"dlsubject"}
-        - @subjects.each do |s|
-          %option{:value=>s}= s
-    %span e.g. npo
-
-  %div.form-group  
-    %label{:for=>"predicate"} Predicate
-    %input.form-control{:id => "predicate", :type=>"text", :name=>"predicate", :list=>"dlpredicate", :placeholder=>"http", :onselect=>"cleanUp(predicate)"}
-      %datalist{:id=>"dlpredicate"}
-        - @predicates.each do |p|
-          %option{:value=>p}= p
-    %span e.g. code
-
-  %div.form-group
-    %label{:for=>"object"} Object
-    %textarea.form-control{:id=>"object", :name=>"object", :rows=>"5", :placeholder=>"search free text (case insensitive)", :onkeyup=>"cleanUp(object)"}
-    %span e.g. cytometric
-  %div.form-group
-    %label{:for=>"type"} Type
-    %select.form-control{:id=>"type", :name=>"type"}
-      - @out_types.each do |t|
-        %option{:value=>t}= t
-  
-  %button.btn.btn-info{:type=>"submit", :style=>"margin: 0 0 2em 0;"} Submit
-
+#result

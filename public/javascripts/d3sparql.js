@@ -9,7 +9,7 @@
 
 var d3sparql = {
   version: "d3sparql.js version 2015-11-19",
-  debug: true  // set to true for showing debug information
+  debug: false  // set to true for showing debug information
 }
 
 /*
@@ -59,7 +59,8 @@ d3sparql.query = function(endpoint, sparql, callback) {
   var url = endpoint + "?query=" + encodeURIComponent(sparql)
   if (d3sparql.debug) { console.log(endpoint) }
   if (d3sparql.debug) { console.log(url) }
-  var mime = "application/sparql-results+json"
+  //var mime = "application/sparql-results+json"
+  var mime = "application/json"
   d3.xhr(url, mime, function(request) {
     var json = request.responseText
     if (d3sparql.debug) { console.log(json) }
