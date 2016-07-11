@@ -18,7 +18,7 @@ end
 get '/search/:query?' do
   sparqlstring = params["query"] 
   response = RestClient::Resource.new(URI.encode("#{$service_uri}/sparql/?query=#{sparqlstring}"), :verify_ssl => 0, :headers => {:accept => "application/json"}).get
-  response.body.chomp
+  response
 end
 
 ["json", "rdf", "txt"].each do |path|

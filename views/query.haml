@@ -2,11 +2,14 @@
   function render(json) {
     var config = {
       "charge": -500,
-      "distance": 50,
+      "distance": 5,
       "width": 1000,
-      "height": 750,
-      "selector": "#result"
+      "height":4500,
+      "margin": 350,
+      "radius": 5,
+      "selector": "#result",
     }
+    //d3sparql.forcegraph(json, config)
     d3sparql.dendrogram(json, config)
     //d3sparql.sunburst(json, config)
     //d3sparql.roundtree(json, config)
@@ -28,6 +31,7 @@
     var sparql = d3.select("#sparql").property("value");
     var uri = "download/"+type+"/?query="+encodeURIComponent(sparql);
     var link = document.getElementById(type);
+    var div = document.getElementById("result");
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
       if (xhttp.readyState == 4 && xhttp.status == 200) {
@@ -38,6 +42,7 @@
           link.href,
           '_self'
         );
+        div.innerHTML = "";
         return false;
       }
       else {
@@ -71,11 +76,12 @@
       PREFIX obo: <http://purl.obolibrary.org/obo/>
 
       SELECT ?root_name ?parent_name ?child_name WHERE {
-        ?root a ?root_name.
-        ?child rdfs:subClassOf ?root.
-        ?child rdfs:subClassOf ?parent .
-        ?child rdfs:label ?child_name .
-        ?parent a ?parent_name .
-      } LIMIT 100
+        ?root a owl:Class.
+        ?root rdfs:label ?root_name.
+        ?parent rdfs:subClassOf ?root.
+        ?parent rdfs:label ?parent_name.
+        ?child rdfs:subClassOf ?parent.
+        ?child rdfs:label ?child_name.
+      } LIMIT 3000
 
 #result
