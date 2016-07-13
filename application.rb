@@ -1,6 +1,7 @@
 require 'json'
 require 'rest-client'
 require "sinatra/reloader" if development?
+require 'rdiscount'
 require_relative "./service.rb"
 
 configure :development do
@@ -42,4 +43,8 @@ end
 get '/download/:file?' do
   file = File.join("/tmp", params[:file])
   send_file(file, :disposition => 'attachment', :filename => File.basename(file))
+end
+
+get '/help' do
+  haml :help
 end

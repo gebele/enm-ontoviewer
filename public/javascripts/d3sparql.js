@@ -1167,6 +1167,8 @@ d3sparql.dendrogram = function(json, config) {
     .attr("transform", function(d) { return "translate(" + d.y + "," + d.x + ")" })
   var circle = node.append("circle")
     .attr("r", opts.radius)
+    .attr("dx", 5)
+    .attr("dy", 5)
   var text = node.append("text")
     .attr("dx", function(d) { return (d.parent && d.children) ? -8 : 8 })
     .attr("dy", 5)
@@ -2026,10 +2028,10 @@ d3sparql.toggle = function() {
   var elem = d3.select("#sparql")
   if (elem.style("display") === "none") {
     elem.style("display", "inline")
-    button.attr("class", "icon-chevron-up")
+    button.attr("class", "glyphicon glyphicon-chevron-up")
   } else {
     elem.style("display", "none")
-    button.attr("class", "icon-chevron-down")
+    button.attr("class", "glyphicon glyphicon-chevron-down")
   }
 }
 

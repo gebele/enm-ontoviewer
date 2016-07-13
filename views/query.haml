@@ -1,37 +1,47 @@
 :javascript
-  function render(json) {
+  function renderA(json) {
     var config = {
-      "charge": -500,
-      "distance": 5,
-      "width": 1000,
-      "height":4500,
-      "margin": 350,
-      "radius": 5,
       "selector": "#result",
     }
-    //d3sparql.forcegraph(json, config)
     d3sparql.dendrogram(json, config)
-    //d3sparql.sunburst(json, config)
-    //d3sparql.roundtree(json, config)
+  }
+  function renderB(json) {
+    var config = {
+      "selector": "#result",
+    }
+    d3sparql.sunburst(json, config)
   }
 
-  function exec_offline() {
-    // remove viewport in case of no result
-    document.getElementById("result").innerHTML = "";
-    var endpoint = d3.select("#endpoint").property("value");
-    var sparql = d3.select("#sparql").property("value");
-    d3sparql.query(endpoint, sparql, render)
-  }
   function toggle() {
-    d3sparql.toggle()
+    d3sparql.toggle();
+  }
+
+  function exec_offline(type) {
+    // remove viewport in case of no result
+    var endpoint = d3.select("#endpoint").property("value");
+    if (type == "A"){
+      // dendrogram
+      var sparql = d3.select("#sparql").property("value");
+      d3sparql.query(endpoint, sparql, renderA)
+    };
+    if (type == "B"){
+      // sunburst
+      var sparql = d3.select("#sparql").property("value");
+      d3sparql.query(endpoint, sparql, renderB)
+    };
+    clearView();
+  }
+  // clear viewport
+  function clearView() {
+    var div = document.getElementById("result");
+    div.innerHTML = "";
   }
 
   // route call file download
   function downloadFile(type) {
-    var sparql = d3.select("#sparql").property("value");
+    var sparql = d3.select("#sparqlDownload").property("value");
     var uri = "download/"+type+"/?query="+encodeURIComponent(sparql);
     var link = document.getElementById(type);
-    var div = document.getElementById("result");
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
       if (xhttp.readyState == 4 && xhttp.status == 200) {
@@ -42,11 +52,8 @@
           link.href,
           '_self'
         );
-        div.innerHTML = "";
+        clearView();
         return false;
-      }
-      else {
-        div.innerHTML = "<p><b>no result</b></p>";
       }
     };
     xhttp.open("GET", uri, true);
@@ -54,34 +61,66 @@
   }
 
 #query{:style => "margin: 10px"}
-  %form.form-inline
-    %label SPARQL endpoint:
-    %input#endpoint{:size=>"50",:type => "text", :value => to("/search/"), :disabled=>"disabled"}
-    %li.btn.btn-default{:onclick => "exec_offline()"} Query
-    %li.btn.btn-default{:onclick => "toggle()"} Hide  
-    %label Download:
-    %li.btn.btn-default
-      %a{:id=>"json", :href=>"#{to("/")}", :onclick=>"downloadFile(\"json\"); return false;"} json
-    %li.btn.btn-default
-      %a{:id=>"rdf", :href=>"#{to("/")}", :onclick=>"downloadFile(\"rdf\"); return false;"} rdf
-    %li.btn.btn-default
-      %a{:id=>"txt", :href=>"#{to("/")}", :onclick=>"downloadFile(\"txt\"); return false;"} txt
-  %textarea#sparql{:rows => "20", :cols=>"85"}
-    :preserve
-      PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-      PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-      PREFIX dc: <http://purl.org/dc/elements/1.1/>
-      PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
-      PREFIX owl: <http://www.w3.org/2002/07/owl#>
-      PREFIX obo: <http://purl.obolibrary.org/obo/>
+  %ul.nav.nav-tabs
+    %li.active
+      %a{:href=>"#viewer", :data=>{:toggle=>"tab"}, :onclick=>"clearView();"} Viewer
+    %li
+      %a{:href=>"#download", :data=>{:toggle=>"tab"}, :onclick=>"clearView();"} Sparql
+    %li
+      %a{:href=>"#help", :data=>{:toggle=>"tab"}, :onclick=>"clearView();"} Help
 
-      SELECT ?root_name ?parent_name ?child_name WHERE {
-        ?root a owl:Class.
-        ?root rdfs:label ?root_name.
-        ?parent rdfs:subClassOf ?root.
-        ?parent rdfs:label ?parent_name.
-        ?child rdfs:subClassOf ?parent.
-        ?child rdfs:label ?child_name.
-      } LIMIT 3000
+  %div.tab-content{:style=>"padding-top:2em;"}
+    %input#endpoint{:size=>"50",:type => "text", :value => to("/search/"), :disabled=>"disabled", :style=>"display:none;"}
+      
+    // tab 1 viewer  
+    #viewer.tab-pane.fade.in.active
+      %textarea#sparql{:rows => "12", :cols=>"85"}
+        :preserve
+          PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+          PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+          SELECT ?root_name ?parent_name ?child_name WHERE {
+            BIND ("cardiovascular AE" AS ?root_name)
+            ?root rdfs:label ?root_name.
+            ?parent rdfs:subClassOf ?root.
+            ?parent rdfs:label ?parent_name.
+            ?child rdfs:subClassOf ?parent.
+            ?child rdfs:label ?child_name.
+          } LIMIT 3000
+      %form.form-inline
+        %div.btn-group  
+          %div.btn-group
+            %button.btn.btn-default.dropdown-toggle{:type=>"button", :data=>{:toggle=>"dropdown"}}
+              Query
+              %b.caret
+            %ul.dropdown-menu
+              %li.btn{:onclick => "exec_offline('A')"} Dendrogram
+              %li.divider
+              %li.btn{:onclick => "exec_offline('B')"} Sunburst
+          %button.btn.btn-default{:type=>"button", :type=>"button", :onclick=>"toggle()"}
+            %span.glyphicon.glyphicon-chevron-up{:id=>"button"}
+
+    // tab 2 sparql
+    #download.tab-pane.fade
+      %textarea#sparqlDownload{:rows => "12", :cols=>"85"}
+        :preserve
+          PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+          PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+          SELECT ?s ?p ?o WHERE {
+            ?s ?p ?o.
+          } LIMIT 100
+      %form.form-inline
+        %div.btn-group
+          %li.btn.btn-default
+            %a{:id=>"json", :href=>"#{to("/")}", :onclick=>"downloadFile(\"json\"); return false;"} json
+          %li.btn.btn-default
+            %a{:id=>"rdf", :href=>"#{to("/")}", :onclick=>"downloadFile(\"rdf\"); return false;"} rdf
+          %li.btn.btn-default
+            %a{:id=>"txt", :href=>"#{to("/")}", :onclick=>"downloadFile(\"txt\"); return false;"} txt
+
+    // tab 3 help
+    #help.tab-pane.fade
+      = haml :help      
 
 #result
