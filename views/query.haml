@@ -1,15 +1,23 @@
 :javascript
   function renderA(json) {
-    var config = {
-      "selector": "#result",
+    if (json == "error"){
+      document.getElementById("result").innerHTML = "<p class=\"error\">Bad Request Error"
+    }else{
+      var config = {
+        "selector": "#result",
+      }
+      d3sparql.dendrogram(json, config)
     }
-    d3sparql.dendrogram(json, config)
   }
   function renderB(json) {
-    var config = {
-      "selector": "#result",
+    if (json == "error"){
+      document.getElementById("result").innerHTML = "<p class=\"error\">Bad Request Error"
+    }else{
+      var config = {
+        "selector": "#result",
+      }
+      d3sparql.sunburst(json, config)
     }
-    d3sparql.sunburst(json, config)
   }
 
   function toggle() {
@@ -54,6 +62,8 @@
         );
         clearView();
         return false;
+      }else{
+        document.getElementById("result").innerHTML = "<p class=\"error\">Bad Request Error"
       }
     };
     xhttp.open("GET", uri, true);

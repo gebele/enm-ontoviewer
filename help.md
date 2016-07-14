@@ -15,11 +15,13 @@ In order to write correct sparql queries please mind this example:
 // additional parent-child node pairs  
 ...
 
+Libraries are [D3](https://d3js.org/) and [d3sparql](https://github.com/ktym/d3sparql), both distributed under [BSD](https://opensource.org/licenses/BSD-3-Clause) license.
+
 ####Sparql
 A sparql interface to the triple-store backend. Available output formats are json, rdf and text. 
 
 ####Restrictions
-The 4store triple-store we use has some restriction in using sparql syntax and functionality.
+The 4store triple-store we use has some restrictions in sparql syntax and functionality.
 
 - Subqueries are not possible
 - VALUES keyword is not available (you can use BIND instead)  

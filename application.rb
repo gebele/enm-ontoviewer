@@ -8,6 +8,10 @@ configure :development do
   $logger = Logger.new(STDOUT)
 end
 
+before do
+  @version = File.read("VERSION").chomp
+end
+
 get '/?' do
   redirect to('/query') 
 end
@@ -47,4 +51,8 @@ end
 
 get '/help' do
   haml :help
+end
+
+get '/license' do
+  haml :license
 end
