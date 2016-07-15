@@ -90,13 +90,13 @@
           PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
           SELECT ?root_name ?parent_name ?child_name WHERE {
-            BIND ("cardiovascular AE" AS ?root_name)
+            BIND ("endpoint" AS ?root_name)
             ?root rdfs:label ?root_name.
             ?parent rdfs:subClassOf ?root.
             ?parent rdfs:label ?parent_name.
             ?child rdfs:subClassOf ?parent.
             ?child rdfs:label ?child_name.
-          } LIMIT 3000
+          } GROUP BY ?child_name
       %form.form-inline
         %div.btn-group  
           %div.btn-group
