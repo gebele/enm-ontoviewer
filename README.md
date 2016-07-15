@@ -14,7 +14,7 @@ Starting the service
 -----------------
 `unicorn -c unicorn.rb -E production -D`
 
-Accesing the service
+Accessing the service
 --------------------
 
 point your browser to [http://localhost:8080](http://localhost:8080)
