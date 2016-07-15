@@ -10,9 +10,9 @@ cd enm-ontoviewer
 bundle install
 ```
 
-Start the service
+Starting the service
 -----------------
-unicorn -c unicorn.rb -E production -D
+`unicorn -c unicorn.rb -E production -D`
 
 
 &copy; [in-silico.ch](http://www.in-silico.ch/)
