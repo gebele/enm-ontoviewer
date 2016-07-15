@@ -17,6 +17,6 @@ Starting the service
 Accesing the service
 --------------------
 
-point your browser to http://localhost:8080
+point your browser to [http://localhost:8080](http://localhost:8080)
 
 &copy; [in-silico.ch](http://www.in-silico.ch/)
