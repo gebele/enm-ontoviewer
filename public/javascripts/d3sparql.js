@@ -59,8 +59,8 @@ d3sparql.query = function(endpoint, sparql, callback) {
   var url = endpoint + "?query=" + encodeURIComponent(sparql)
   if (d3sparql.debug) { console.log(endpoint) }
   if (d3sparql.debug) { console.log(url) }
-  //var mime = "application/sparql-results+json"
-  var mime = "application/json"
+  var mime = "application/sparql-results+json"
+  //var mime = "application/json"
   d3.xhr(url, mime, function(request) {
     if (d3sparql.debug) { console.log(json) }
     // first check for request error

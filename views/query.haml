@@ -1,9 +1,13 @@
 :javascript
   function renderA(json) {
     if (json == "error"){
-      document.getElementById("result").innerHTML = "<p class=\"error\">Bad Request Error"
+      document.getElementById("result").innerHTML = "<p class=\"error\">Bad Request"
     }else{
       var config = {
+        "width":    1000,       // canvas width (optional)
+        "height":   3000,      // canvas height (optional)
+        "margin":   300,       // width margin for labels (optional)
+        "radius":   5,         // radius of node circles (optional)
         "selector": "#result",
       }
       d3sparql.dendrogram(json, config)
@@ -11,7 +15,7 @@
   }
   function renderB(json) {
     if (json == "error"){
-      document.getElementById("result").innerHTML = "<p class=\"error\">Bad Request Error"
+      document.getElementById("result").innerHTML = "<p class=\"error\">Bad Request"
     }else{
       var config = {
         "selector": "#result",
@@ -63,7 +67,7 @@
         clearView();
         return false;
       }else{
-        document.getElementById("result").innerHTML = "<p class=\"error\">Bad Request Error"
+        document.getElementById("result").innerHTML = "<p class=\"error\">Bad Request"
       }
     };
     xhttp.open("GET", uri, true);
@@ -90,13 +94,13 @@
           PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
           SELECT ?root_name ?parent_name ?child_name WHERE {
-            BIND ("endpoint" AS ?root_name)
-            ?root rdfs:label ?root_name.
-            ?parent rdfs:subClassOf ?root.
-            ?parent rdfs:label ?parent_name.
-            ?child rdfs:subClassOf ?parent.
-            ?child rdfs:label ?child_name.
-          } GROUP BY ?child_name
+            VALUES ?root_name { "endpoint" }
+            ?root rdfs:label ?root_name .
+            ?child rdfs:subClassOf{,3} ?root .
+            ?child rdfs:subClassOf ?parent .
+            ?child rdfs:label ?child_name .
+            ?parent rdfs:label ?parent_name .
+          }
       %form.form-inline
         %div.btn-group  
           %div.btn-group

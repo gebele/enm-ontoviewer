@@ -2,25 +2,19 @@
 The javascript plugin for visualisation process a json hash as response from the triple-store.
 In order to write correct SPARQL queries please mind this example:
 
-...  
-{ "root_name":   {"type": "literal", "value": "root"},  
-  "parent_name": {"type": "literal", "value": "root"},  
-  "child_name":  {"type": "literal", "value": "child1"}},  
-{ "root_name":   {"type": "literal", "value": "root"},  
-  "parent_name": {"type": "literal", "value": "child1"},  
-  "child_name":  {"type": "literal", "value": "grand child1"}},  
-{ "root_name":   {"type": "literal", "value": "root"},  
-  "parent_name": {"type": "literal", "value": "child1"},  
-  "child_name":  {"type": "literal", "value": "grand child2"}},  
-// additional parent-child node pairs  
-...
+```
+    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
+    SELECT ?root_name ?parent_name ?child_name WHERE {
+      VALUES ?root_name { "endpoint" }
+      ?root rdfs:label ?root_name .
+      ?child rdfs:subClassOf{,3} ?root .
+      ?child rdfs:subClassOf ?parent .
+      ?child rdfs:label ?child_name .
+      ?parent rdfs:label ?parent_name .
+    }
+```
 ####Sparql
 SPARQL interface to the triple-store. Available output formats are json, rdf and text. 
 
-####Restrictions
-The 4store triple-store we use has some restrictions in SPARQL syntax.
-
-- Subqueries are not possible
-- VALUES keyword is not available (you can use BIND instead)  
-- PROPERTY PATHS like `*` or `+` are not allowed   
