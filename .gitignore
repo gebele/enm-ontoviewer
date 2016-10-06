@@ -1,5 +1,6 @@
 Gemfile.lock
 service.rb
+log
 graphs.json
 subjects.json
 predicates.json

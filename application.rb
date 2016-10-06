@@ -1,6 +1,5 @@
 require 'json'
 require 'rest-client'
-require "sinatra/reloader" if development?
 require 'rdiscount'
 require_relative "./service.rb"
 
@@ -21,34 +20,58 @@ get '/query/?' do
 end
 
 get '/search/:query?' do
-  sparqlstring = params["query"] 
+  sparqlstring = params["query"]
   response = RestClient::Resource.new(URI.encode("#{$service_uri}/sparql/?query=#{sparqlstring}"), :verify_ssl => 0, :headers => {:accept => "application/sparql-results+json"}).get
   response
 end
 
-["json", "rdf", "txt"].each do |path|
-  get "/download/#{path}/:query?" do
-    sparqlstring = params["query"]
-    file = Tempfile.new("enm")
-    case path
-    when "json"
-      response = RestClient::Resource.new(URI.encode("#{$service_uri}/sparql/?query=#{sparqlstring}"), :verify_ssl => 0, :headers => {:accept => "application/json"}).get
-    when "rdf"
-      response = RestClient::Resource.new(URI.encode("#{$service_uri}/sparql/?query=#{sparqlstring}"), :verify_ssl => 0, :headers => {:accept => "application/rdf+xml"}).get
-    when "txt"
-      response = RestClient::Resource.new(URI.encode("#{$service_uri}/sparql/?query=#{sparqlstring}"), :verify_ssl => 0, :headers => {:accept => "text/plain"}).get
+# sparql endpoint access
+get '/sparql/:query?' do
+  accepted = [
+    "text/plain",
+    "text/csv",
+    "text/html",
+    "text/n3",
+    "text/turtle",
+    "text/tab-separated-values",
+    "application/rdf+xml",
+    "application/sparql-results+json",
+    "application/vnd.ms-excel"
+  ]
+  sparqlstring = params[:query]
+  content_type = request.env["HTTP_ACCEPT"]
+  if accepted.include?(content_type)
+    RestClient::Resource.new(URI.encode("#{$service_uri}/sparql/?query=#{sparqlstring}"), :verify_ssl => 0, :headers => {:accept => content_type } ).get do |response,request,result|
+      if response.code == 400
+        return "malformed query\n"
+      elsif response.code >= 400
+        return "error processing query or fetching data\n"
+      else
+        response
+      end
     end
-    file.write(response)
-    file.close
-    file.path.gsub(/\/tmp\//,"")
+  else
+    return "#{content_type} is not supported content type.\n"
   end
 end
 
-get '/download/:file?' do
-  file = File.join("/tmp", params[:file])
-  send_file(file, :disposition => 'attachment', :filename => File.basename(file))
+post "/download" do
+  type = params[:query_type]
+  sparqlstring = params[:queryfield]
+  file = Tempfile.new("enm")
+  response = RestClient::Resource.new(URI.encode("#{$service_uri}/sparql/?query=#{sparqlstring}"), :verify_ssl => 0, :headers => {:accept => type}).get do |response, request, result|
+    if response.code == 400
+      return "malformed query\n"
+    elsif response.code >= 400
+      return "error processing query or fetching data\n"
+    else
+      file.write(response)
+      send_file(file, :disposition => 'attachment', :filename => File.basename(file))
+      file.close
+    end
+  end
 end
-
+    
 get '/help' do
   haml :help
 end

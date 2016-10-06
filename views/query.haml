@@ -49,29 +49,10 @@
     div.innerHTML = "";
   }
 
-  // route call file download
-  function downloadFile(type) {
+  // get sparql value
+  function sparqlValue(){
     var sparql = d3.select("#sparqlDownload").property("value");
-    var uri = "download/"+type+"/?query="+encodeURIComponent(sparql);
-    var link = document.getElementById(type);
-    var xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange = function() {
-      if (xhttp.readyState == 4 && xhttp.status == 200) {
-        // link attribute change to file location 
-        uri = "#{to("/")}"+"download/"+xhttp.responseText;
-        link.setAttribute('href', uri );
-        window.open(
-          link.href,
-          '_self'
-        );
-        clearView();
-        return false;
-      }else{
-        document.getElementById("result").innerHTML = "<p class=\"error\">Bad Request"
-      }
-    };
-    xhttp.open("GET", uri, true);
-    xhttp.send();
+    $('#inputquery').val(sparql)
   }
 
 #query{:style => "margin: 10px"}
@@ -93,10 +74,10 @@
           PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
           PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
-          SELECT ?root_name ?parent_name ?child_name WHERE {
+          SELECT DISTINCT ?root_name ?parent_name ?child_name WHERE {
             VALUES ?root_name { "endpoint" }
             ?root rdfs:label ?root_name .
-            ?child rdfs:subClassOf{,3} ?root .
+            ?child rdfs:subClassOf{,5} ?root .
             ?child rdfs:subClassOf ?parent .
             ?child rdfs:label ?child_name .
             ?parent rdfs:label ?parent_name .
@@ -124,14 +105,14 @@
           SELECT ?s ?p ?o WHERE {
             ?s ?p ?o.
           } LIMIT 100
-      %form.form-inline
-        %div.btn-group
-          %li.btn.btn-default
-            %a{:id=>"json", :href=>"#{to("/")}", :onclick=>"downloadFile(\"json\"); return false;"} json
-          %li.btn.btn-default
-            %a{:id=>"rdf", :href=>"#{to("/")}", :onclick=>"downloadFile(\"rdf\"); return false;"} rdf
-          %li.btn.btn-default
-            %a{:id=>"txt", :href=>"#{to("/")}", :onclick=>"downloadFile(\"txt\"); return false;"} txt
+      %form.form-inline{:id=>"form2", :role=>"form", :action=> to("/download"), :method=>"post"}
+        %div.form-group
+          %select.form-control{:id=>"selType", :autocomplete=>"off", :name=>"query_type",:value=>"", :onchange=>"sparqlValue();"}
+            %option{:value=>"", :disabled=>"disabled", :selected=>"selected"} choose output format
+            - %w(application/json application/rdf+xml text/n3 text/turtle text/csv text/tab-separated-values text/html application/vnd.ms-excel).each do |type|
+              %option{:value => type}= type
+          %input#inputquery{:type=>"hidden",:name=>"queryfield", :value=>""}
+        %button.btn.btn-default{:id=>"submitbutton", :type=>"submit", :onclick=>"sparqlValue();"} download
 
     // tab 3 help
     #help.tab-pane.fade
