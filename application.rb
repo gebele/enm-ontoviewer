@@ -80,7 +80,7 @@ get "/download" do
       elsif response.code == 200
         file.write(response)
         file.rewind
-        send_file(file.path, :disposition => 'attachment', :filename => File.basename(file), :x_sendfile => true)
+        send_file(file, :disposition => 'attachment', :filename => File.basename(file), :type => type)
       end
       file.close
       file.unlink
