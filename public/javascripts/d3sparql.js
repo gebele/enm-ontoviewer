@@ -64,8 +64,8 @@ d3sparql.query = function(endpoint, sparql, callback) {
   d3.xhr(url, mime, function(request) {
     if (d3sparql.debug) { console.log(json) }
     // first check for request error
-    if (request == null){
-      callback("error")
+    if (request.responseText == ("malformed query" || "error processing query or fetching data")){
+      callback(request.responseText)
     }else{
       var json = request.responseText
       callback(JSON.parse(json))

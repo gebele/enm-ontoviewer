@@ -1,7 +1,7 @@
 :javascript
   function renderA(json) {
-    if (json == "error"){
-      document.getElementById("result").innerHTML = "<p class=\"error\">Bad Request"
+    if (json == ("malformed query" || "error processing query or fetching data")){
+      document.getElementById("result").innerHTML = "<p class=\"error\">"+json
     }else{
       var config = {
         "width":    1000,       // canvas width (optional)
@@ -14,8 +14,8 @@
     }
   }
   function renderB(json) {
-    if (json == "error"){
-      document.getElementById("result").innerHTML = "<p class=\"error\">Bad Request"
+    if (json == ("malformed query" || "error processing query or fetching data")){
+      document.getElementById("result").innerHTML = "<p class=\"error\">"+json
     }else{
       var config = {
         "selector": "#result",
@@ -105,11 +105,10 @@
           SELECT ?s ?p ?o WHERE {
             ?s ?p ?o.
           } LIMIT 100
-      %form.form-inline{:id=>"form2", :role=>"form", :action=> to("/download"), :method=>"post"}
+      %form.form-inline{:id=>"form2", :role=>"form", :action=> to("/download"), :method=>"get"}
         %div.form-group
-          %select.form-control{:id=>"selType", :autocomplete=>"off", :name=>"query_type",:value=>"", :onchange=>"sparqlValue();"}
-            %option{:value=>"", :disabled=>"disabled", :selected=>"selected"} choose output format
-            - %w(application/json application/rdf+xml text/n3 text/turtle text/csv text/tab-separated-values text/html application/vnd.ms-excel).each do |type|
+          %select.form-control{:id=>"selType", :autocomplete=>"off", :name=>"query_type",:value=>""}
+            - @accepted.sort.each do |type|
               %option{:value => type}= type
           %input#inputquery{:type=>"hidden",:name=>"queryfield", :value=>""}
         %button.btn.btn-default{:id=>"submitbutton", :type=>"submit", :onclick=>"sparqlValue();"} download
