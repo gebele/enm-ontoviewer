@@ -102,8 +102,9 @@
           PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
           PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
-          SELECT ?s ?p ?o WHERE {
-            ?s ?p ?o.
+          SELECT DISTINCT * WHERE {
+            ?s ?p ?o;
+            rdfs:label "toxicological endpoint"@en.
           } LIMIT 100
       %form.form-inline{:id=>"form2", :role=>"form", :action=> to("/download"), :method=>"get"}
         %div.form-group
