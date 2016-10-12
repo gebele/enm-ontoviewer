@@ -9,7 +9,7 @@ end
 
 before do
   @version = File.read("VERSION").chomp
-  @accepted = [
+  @accepted_select = [
     "text/plain",
     "text/csv",
     "text/html",
@@ -21,6 +21,22 @@ before do
     "application/sparql-results+xml",
     "application/sparql-results+json",
     "application/vnd.ms-excel"
+  ]
+  @accepted_construct = [
+    "text/rdf+n3",
+    "text/rdf+ttl",
+    "text/rdf+turtle",
+    "text/turtle",
+    "text/n3",
+    "application/turtle",
+    "application/x-turtle",
+    "text/ntriples",
+    "application/rdf+xml",
+    "text/csv",
+    "application/odata+json",
+    "application/microdata+json",
+    "application/rdf+json",
+    "application/ld+json"
   ]
 end
 
@@ -51,7 +67,7 @@ end
 get '/sparql/:query?' do
   sparqlstring = params[:query]
   type = request.env["HTTP_ACCEPT"] == "application/sparql-results+json,*/*" ? request.env["HTTP_ACCEPT"].gsub(/,\*\/\*/,"") : request.env["HTTP_ACCEPT"]
-  if @accepted.include?(type)
+  if (sparqlstring =~ /^select/i ? @accepted_select.include?(type) : @accepted_construct.include?(type) )
     RestClient::Resource.new(URI.encode("#{$service_uri}/sparql/?query=#{sparqlstring}"), :verify_ssl => 0, :headers => {:accept => type } ).get do |response,request,result|
       if response.code == 400
         halt response.code, "malformed query\n"
@@ -71,7 +87,8 @@ get "/download" do
   type = params[:query_type]
   sparqlstring = params[:queryfield]
   file = Tempfile.new("enm")
-  if @accepted.include?(type)
+
+  if (sparqlstring =~ /^select/i ? @accepted_select.include?(type) : @accepted_construct.include?(type) )
     RestClient::Resource.new(URI.encode("#{$service_uri}/sparql/?query=#{sparqlstring}"), :verify_ssl => 0, :headers => {:accept => type}).get do |response, request, result|
       if response.code == 400
         halt response.code, "malformed query\n"

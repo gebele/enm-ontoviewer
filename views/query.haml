@@ -109,7 +109,11 @@
       %form.form-inline{:id=>"form2", :role=>"form", :action=> to("/download"), :method=>"get"}
         %div.form-group
           %select.form-control{:id=>"selType", :autocomplete=>"off", :name=>"query_type",:value=>""}
-            - @accepted.sort.each do |type|
+            %optgroup{:label=>"SELECT"}
+            - @accepted_select.sort.each do |type|
+              %option{:value => type}= type
+            %optgroup{:label=>"CONSTRUCT"}
+            - @accepted_construct.sort.each do |type|
               %option{:value => type}= type
           %input#inputquery{:type=>"hidden",:name=>"queryfield", :value=>""}
         %button.btn.btn-default{:id=>"submitbutton", :type=>"submit", :onclick=>"sparqlValue();"} download
