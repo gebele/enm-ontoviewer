@@ -5,5 +5,5 @@ Please mind the template given in the editor and note the `{,5}` [property paths
   
 ---
 ####Sparql
-This page gives you a [SPARQL](https://www.w3.org/TR/rdf-sparql-query/) interface to the triple-store. Available output formats are json, rdf, turtle, ntriples, csv, tsv, html and vnd.ms-excel. The full [SPARQL](https://www.w3.org/TR/rdf-sparql-query/) syntax is available including subqueries.
+This page gives you a [SPARQL](https://www.w3.org/TR/rdf-sparql-query/) interface to the triple-store. Available output formats are "application/json", "application/ld+json", "application/microdata+json", "application/odata+json", "application/rdf+json", "application/rdf+xml", "application/sparql-results+json", "application/sparql-results+xml", "application/turtle", "application/vnd.ms-excel", "application/x-turtle", "text/csv", "text/html", "text/n3", "text/ntriples", "text/plain", "text/rdf+n3", "text/rdf+ttl", "text/rdf+turtle", "text/tab-separated-values" and "text/turtle". The full [SPARQL](https://www.w3.org/TR/rdf-sparql-query/) syntax is available including subqueries.
 

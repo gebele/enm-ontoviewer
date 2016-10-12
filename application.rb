@@ -41,10 +41,10 @@ before do
 end
 
 get '/?' do
-  redirect to('/query') 
+  redirect to('/enm-viewer') 
 end
 
-get '/query/?' do
+get '/enm-viewer/?' do
   haml :query
 end
 
@@ -107,10 +107,6 @@ get "/download" do
   end
 end
     
-get '/help' do
-  haml :help
-end
-
 get '/license' do
   haml :license
 end
