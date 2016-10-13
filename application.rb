@@ -52,6 +52,7 @@ end
 # while xhr response gets 'null' for js function this needs an extra handling without response code
 get '/search/:query?' do
   sparqlstring = params["query"]
+  halt 400, "Not allowed SPARQL keyword.\n" if !!(sparqlstring =~ /\b(delete|insert|load|clear)\b/i)
   response = RestClient::Resource.new(URI.encode("#{$service_uri}/sparql/?query=#{sparqlstring}"), :verify_ssl => 0, :headers => {:accept => "application/sparql-results+json"}).get do |response, request, result|
     if response.code == 400
       return "malformed query"
@@ -66,7 +67,8 @@ end
 # sparql endpoint access
 get '/sparql/:query?' do
   sparqlstring = params[:query]
-  type = request.env["HTTP_ACCEPT"] == "application/sparql-results+json,*/*" ? request.env["HTTP_ACCEPT"].gsub(/,\*\/\*/,"") : request.env["HTTP_ACCEPT"]
+  halt 400, "Not allowed SPARQL keyword.\n" if !!(sparqlstring =~ /\b(delete|insert|load|clear)\b/i)
+  type = request.env["HTTP_ACCEPT"]
   if (sparqlstring =~ /^select/i ? @accepted_select.include?(type) : @accepted_construct.include?(type) )
     RestClient::Resource.new(URI.encode("#{$service_uri}/sparql/?query=#{sparqlstring}"), :verify_ssl => 0, :headers => {:accept => type } ).get do |response,request,result|
       if response.code == 400
@@ -74,11 +76,11 @@ get '/sparql/:query?' do
       elsif response.code > 400
         halt response.code "error processing query or fetching data\n"
       else
-        response
+        response+"\n"
       end
     end
   else
-    return "#{type} is not supported content type.\n"
+    halt 400, "#{type} is not supported content type.\n"
   end
 end
 
@@ -86,6 +88,7 @@ end
 get "/download" do
   type = params[:query_type]
   sparqlstring = params[:queryfield]
+  halt 400, "Not allowed SPARQL keyword.\n" if !!(sparqlstring =~ /\b(delete|insert|load|clear)\b/i)
   file = Tempfile.new("enm")
 
   if (sparqlstring =~ /^select/i ? @accepted_select.include?(type) : @accepted_construct.include?(type) )

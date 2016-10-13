@@ -5,5 +5,5 @@ require "sinatra/reloader" if development?
 FileUtils.mkdir_p 'log' unless File.exists?('log')
 log = File.new("log/enm-ontoviewer.log", "a")
 $stdout.reopen(log)
-$stderr.reopen(log)
+#$stderr.reopen(log)
 run Sinatra::Application
