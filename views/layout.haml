@@ -12,22 +12,48 @@
     %link{:rel=>'stylesheet', :href=>"#{'/css/theme.bootstrap.min.css'}"}
     %script{:src=>"/javascripts/jquery-1.11.2.min.js"}
     %script{:src=>"/javascripts/bootstrap.min.js"}
+    %script{:src=>"/javascripts/d3.v3.min.js"}
+    %script{:src=>"/javascripts/d3sparql.js"}
+    %script{:src=>"/javascripts/ist.js"}
+    %script{:src=>"/javascripts/google_analytics.js"}
+
   %body
     %noscript
       %div{ :style=>"width: 22em; position: absolute; left: 50%; margin-left: -11em; color: red; background-color: white; border: 1px solid red; padding: 4px; font-family: sans-serif"}
       Your web browser must have JavaScript enabled in order for this application to display correctly.
-    %header.page-header{:style=>"margin:20px 0 20px;"}
+    %header.page-header{:style=>"margin:20px 0 20px;text-align:justify;display:inline-block;width:100%;"}
       %div.row
         %div.col-sm-2
-          %a{:href=> to("/query")}
-            %img.media-object{:src=>"/images/ist_logo.png", :alt=>"logo_ist", :style=>"margin:0 3em 0 2em;"}
-        %div.col-sm-6
-          %h1.media-heading{:style=>"margin: 0 0 0 1em;"} eNM Ontology Viewer
+          %a{:href=> to("/")}
+            %img.media-object{:src=>"/images/IST_logo_s.png", :width=>"150px", :heigth=>"150px", :alt=>"logo_ist", :style=>"margin:0 0 0 2em;"}
         %div.col-sm-2
-          %a{:href=> "http://www.enanomapper.net"}
-            %img.media-object{:src=>"/images/enm_logo.png", :width=>"200px", :heigth=>"200px", :alt=>"logo_enm", :style=>"margin:0 3em 0 2em;"}
+          %a{:href=> "http://www.enanomapper.net", :rel => "external"}
+            %img.media-object{:src=>"/images/enm_logo.png", :rel=> "external", :width=>"200px", :heigth=>"200px", :alt=>"logo_enm", :style=>"margin:0 3em 0 0;"}
+        %div.col-sm-6
+          %h1.media-heading{:style=>"margin: 0 0 0 1em;"} eNM ontology viewer
     
     %div.container-fluid
+      %topline
+        %div.row
+          %div.col-md-8
+            Problems, bugs, ideas for improvements ? Please report at our
+            %a{:href => 'https://github.com/enanomapper/enm-ontoviewer/issues', :rel => "external"} issue tracker
+            or send us an email
+            %a{ :href=>"mailto:info@in-silico.ch", :target=>"_top"}
+              %img.share{:src=>"/images/Email.png"}
+            (version #{@version}).
+          %div.col-md-2
+          %div.col-md-2
+            %a{:href=>"https://twitter.com/intent/tweet?source=http%3A%2F%2Flazar.in-silico.ch&text=:%20http%3A%2F%2Flazar.in-silico.ch", :target=>"_blank", :title=>"Tweet"}
+              %img.share{:src=>"/images/Twitter.png"}
+            %a{:href=>"https://plus.google.com/share?url=http%3A%2F%2Flazar.in-silico.ch", :target=>"_blank", :title=>"Share on Google+"}
+              %img.share{:src=>"/images/Google+.png"}
+            %a{:href=>"http://www.linkedin.com/shareArticle?mini=true&url=http%3A%2F%2Flazar.in-silico.ch&title=&summary=&source=http%3A%2F%2Flazar.in-silico.ch", :target=>"_blank", :title=>"Share on LinkedIn"}
+              %img.share{:src=>"/images/LinkedIn.png"}
+            %a{:href=>"https://www.facebook.com/sharer/sharer.php?u=http%3A%2F%2Flazar.in-silico.ch&title=&summary=&source=http%3A%2F%2Flazar.in-silico.ch", :target=>"_blank", :title=>"Share on Facebook"}
+              %img.share{:src=>"/images/Facebook.png"}
+      %hr
+
       :javascript
         $(document).ready(function(){
           $("#back-top").hide();
@@ -35,11 +61,13 @@
           
       = yield
     
-    %footer.footer
+    %footer.footer{:style=>"margin-top:6em;"}
       %div.container-fluid
         %p.text-muted
           &copy; 
           %a{:href => 'http://www.in-silico.ch', :rel => "external"} <i style="font-family: serife">in silico</i> toxicology gmbh 2014 - #{Time.now.year.to_s}
+          |
+          %a{:href => to("/license"), :rel => "external"} GPL3 License
 
     #back-top{:style => "z-index:100;position:fixed;bottom:1%;right:1%;"}
       %a{:href => "", :style=>"text:decoration:none;color:#ccc;"}

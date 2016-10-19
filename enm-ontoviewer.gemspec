@@ -18,4 +18,5 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency "sinatra"
   s.add_runtime_dependency "haml"
   s.add_runtime_dependency "unicorn"
+  s.add_runtime_dependency "rdiscount", "~> 2.1.0", '>= 2.1.0'
 end
